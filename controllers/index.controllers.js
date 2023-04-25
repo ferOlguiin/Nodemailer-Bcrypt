@@ -41,7 +41,8 @@ export const loginUser = async (req, res) => {
 }
 
 export const ipData = (req, res) => {
-    const ip = req.header('x-forwarded-for')
-    console.log("esta es la ip del cliente: " + ip);
-    console.log("esto es el remoteAdress: " + req.connection.remoteAddress)
+    console.log("esto es el reqsocket: ", req.socket)
+    const ip = req.socket.localAddress;
+    const port = req.socket.localPort;
+    console.log(`Your IP address is ${ip} and your source port is ${port}.`);
 }
