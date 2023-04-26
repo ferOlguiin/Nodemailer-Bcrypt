@@ -1,6 +1,6 @@
 import { comparePassword, encryptPassword } from "../encrypt/passwordEncrypt.js";
 import User from '../models/User.js';
-import { sendMail } from "../nodemailer/nodemailer.js";
+import { sendMail, warningMail } from "../nodemailer/nodemailer.js";
 
 
 export const welcome = (req, res) => {
@@ -18,7 +18,8 @@ export const registerUser = async (req, res) => {
             }
         };
         const passwordEncrypted = await encryptPassword(password);
-        const newUser = new User({name: name, email: email, password: passwordEncrypted});
+        const ip = req.ip;
+        const newUser = new User({name: name, email: email, password: passwordEncrypted, ip: ip});
         await newUser.save();
         const checkMail = await sendMail(name, email);
         checkMail.messageId ? console.log("email enviado correctamente") : console.log("algo falló al enviar el email");
@@ -34,6 +35,9 @@ export const loginUser = async (req, res) => {
     const user = await User.findOne({email})
     const confirmation = await comparePassword(password, user.password)
     if(confirmation){
+        if(user.ip !== req.ip){
+            await warningMail(user.name, user.email, req.ip)
+        }
         return res.send(user)
     } else {
         return res.status(400).send("Contraseña incorrecta")

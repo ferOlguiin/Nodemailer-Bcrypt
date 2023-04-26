@@ -15,6 +15,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
         trim: true
+    },
+    ip: {
+        type: String,
+        trim: true
     }
 })
 
