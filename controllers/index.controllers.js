@@ -42,4 +42,5 @@ export const loginUser = async (req, res) => {
 
 export const ipData = (req, res) => {
     console.log(req.ip)
+    console.log(req.socket.remoteAddress)
 }
