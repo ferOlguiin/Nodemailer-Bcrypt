@@ -41,6 +41,5 @@ export const loginUser = async (req, res) => {
 }
 
 export const ipData = (req, res) => {
-    const ip = req.headers('x-forwarded-for')
-    console.log("esta es la ip del cliente: " + ip);
+    console.log(req.ip)
 }
