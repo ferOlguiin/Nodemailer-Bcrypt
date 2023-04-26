@@ -2,6 +2,7 @@ import fetch from "node-fetch";
 import { comparePassword, encryptPassword } from "../encrypt/passwordEncrypt.js";
 import User from '../models/User.js';
 import { sendMail, warningMail } from "../nodemailer/nodemailer.js";
+import { IPGEO_KEY } from "../config.js";
 
 
 export const welcome = (req, res) => {
@@ -37,17 +38,14 @@ export const loginUser = async (req, res) => {
     const confirmation = await comparePassword(password, user.password)
     if(confirmation){
         if(user.ip !== req.ip){
-            await warningMail(user.name, user.email, req.ip)
+            const data = await fetch(`https://api.ipgeolocation.io/ipgeo?apiKey=${IPGEO_KEY}&ip=${req.ip}`);
+            const result = await data.json();
+            const dispositiveType = req.device.type;
+            const dispositiveName = req.device.name;
+            await warningMail(user.name, user.email, req.ip, result, dispositiveType, dispositiveName);
         }
         return res.send(user)
     } else {
         return res.status(400).send("Contraseña incorrecta")
     }
-}
-
-export const ipData = async (req, res) => {
-    const data = await fetch("https://api.ipgeolocation.io/ipgeo?apiKey=88cd195c03924c4ca81a6c295a72828c&ip=" + req.ip);
-    const result = await data.json();
-    console.log("estos son los datos de la ipdata.io: ", result)
-    console.log(`el usuario que esta ingresando tiene la ip ${req.ip}, el codigo de su continente es ${result.continent_code}, el nombre de su pais es ${result.country_name}, su codigo postal es ${result.zipcode}, y su provincia es ${result.state_prov}. Se ha conectado mediando un dispositivo de tipo ${req.device.type} y el nombre del dispositivo es ${req.device.name}`)
-}
+};
