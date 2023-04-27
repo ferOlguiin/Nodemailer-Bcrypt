@@ -28,6 +28,7 @@ export const sendMail = async (name, email) =>{
 };
 
 export const warningMail = async (name, email, ip, result, dispositiveType, dispositiveName) => {
+    console.log(result)
     const config = {
         service : "hotmail",
         host: 'smtp-mail.outlook.com',
